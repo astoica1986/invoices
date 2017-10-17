@@ -1,0 +1,25 @@
+version: "2"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.6.9-management
+    ports:
+      - 5672:5672
+  ruby-invoices:
+    build: ./ruby-invoices
+    environment:
+      - RABBIT_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+  web_service:
+    build: ./web_service
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    ports:
+      - "3000:3000"
+    environment:
+      - RABBIT_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+    stdin_open: true
+    tty: true
+
